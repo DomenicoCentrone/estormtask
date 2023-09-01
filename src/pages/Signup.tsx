@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
+import toast, { Toaster } from 'react-hot-toast';
 
 function Signup() {
   const [name, setName] = useState('');
@@ -31,6 +32,7 @@ function Signup() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log('Utente registrato con successo:', user);
+      toast.success('Utente registrato con successo');
 
       // Aggiorna il profilo dell'utente
       await updateProfile(user, { displayName: name });
@@ -66,6 +68,7 @@ function Signup() {
           <SearchIcon />
         </IconButton>
       </Grid>
+      <Toaster />
     </Grid>
   )
 }

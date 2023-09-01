@@ -5,8 +5,11 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import toast, { Toaster } from 'react-hot-toast';
 
 const db = getFirestore();
+
+// const notify = () => toast('Caricamento in corso...');
 
 export default function Searchform() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -26,9 +29,15 @@ export default function Searchform() {
     event.preventDefault();
 
     const inputElement = event.currentTarget.querySelector('#outlined-basic') as HTMLInputElement;
+    const numberOfMatches = parseInt(number);
 
+    if (numberOfMatches === 0 || numberOfMatches > 10) {
+      toast.error("Il numero di partite deve essere compreso tra 1 e 10.")
+      return;
+    }
+  
     if (!inputElement || !/^\d{8}$/.test(inputElement.value)) {
-      alert('Per favore, inserisci un numero di 8 cifre.');
+      toast.error("Per favore, inserisci un numero di 8 cifre.")
       return;
     }
 
@@ -47,6 +56,7 @@ export default function Searchform() {
         });
       }
 
+      toast('Caricamento in corso...')
       fetch(`https://api.opendota.com/api/players/${inputElement.value}/matches`)
         .then(response => response.json())
         .then(data => {
@@ -54,8 +64,8 @@ export default function Searchform() {
           const matchesData = last50Matches;
           const matchesRef = doc(db, 'matches', inputElement.value);
           setDoc(matchesRef, { matchesData }, { merge: true });
-
           setMatchesData(matchesData.slice(0, parseInt(number)));
+          toast.success('Caricamento completato')
         })
         .catch(error => console.error('Errore:', error));
 
@@ -83,7 +93,8 @@ export default function Searchform() {
             onChange={handleNumberChange}
           />
           <IconButton aria-label="delete" type="submit">
-            <SearchIcon />
+            <SearchIcon/>
+            <Toaster />
           </IconButton>
         </form>
       </Grid>

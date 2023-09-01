@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Navbar() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -21,6 +22,7 @@ export default function Navbar() {
   const handleSignOut = async () => {
     try {
       await signOut(getAuth());
+      toast.success('Sloggato con successo.');
     } catch (error) {
       console.error('Errore durante il logout:', error);
     }
@@ -43,6 +45,7 @@ export default function Navbar() {
             <Button color="inherit" href="/login">Iscriviti</Button>
           )}
         </Toolbar>
+        <Toaster />
       </AppBar>
     </Box>
   );
