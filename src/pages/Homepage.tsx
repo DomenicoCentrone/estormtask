@@ -1,29 +1,30 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import Grid from '@mui/material/Unstable_Grid2';
 import Searchform from '../components/Searchform';
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  justifyContent: 'center',
-  color: theme.palette.text.secondary,
-}));
+import Typography from '@mui/material/Typography';
 
 export default function BasicGrid() {
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid xs={12}>
-          <Item>
-            <Searchform />
-          </Item>
-        </Grid>
+    <Grid container spacing={2} alignItems="center" justifyContent="center" textAlign="center" style={{ paddingTop: '1%' }}>
+      <Grid xs={3}>
+        {user ? (
+          <Searchform />
+        ) : (
+          <Typography>Per favore, registrati</Typography>
+        )}
       </Grid>
-    </Box>
+    </Grid>
   );
 }

@@ -1,11 +1,31 @@
 import * as React from 'react';
+import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-export default function ButtonAppBar() {
+export default function Navbar() {
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(getAuth());
+    } catch (error) {
+      console.error('Errore durante il logout:', error);
+    }
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -14,7 +34,14 @@ export default function ButtonAppBar() {
             E-Storm
           </Typography>
           <Button color="inherit" href="/">Homepage</Button>
-          <Button color="inherit" href="/login">Login</Button>
+          {user ? (
+            <>
+              <Typography sx={{ marginLeft: 2 }}>{user.email ? user.email.split('@')[0] : ''}</Typography>
+              <Button color="inherit" onClick={handleSignOut}>Esci</Button>
+            </>
+          ) : (
+            <Button color="inherit" href="/login">Iscriviti</Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
