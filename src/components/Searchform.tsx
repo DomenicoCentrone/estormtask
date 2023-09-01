@@ -9,8 +9,6 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const db = getFirestore();
 
-// const notify = () => toast('Caricamento in corso...');
-
 export default function Searchform() {
   const [user, setUser] = React.useState<User | null>(null);
   const [matchesData, setMatchesData] = React.useState<any[]>([]);
@@ -36,8 +34,8 @@ export default function Searchform() {
       return;
     }
   
-    if (!inputElement || !/^\d{8}$/.test(inputElement.value)) {
-      toast.error("Per favore, inserisci un numero di 8 cifre.")
+    if (!inputElement || !/^\d{7,10}$/.test(inputElement.value)) {
+      toast.error("Per favore, inserisci un numero tra 7 e 10 cifre.")
       return;
     }
 
@@ -56,18 +54,25 @@ export default function Searchform() {
         });
       }
 
-      toast('Caricamento in corso...')
+      toast.loading('Caricamento in corso...')
       fetch(`https://api.opendota.com/api/players/${inputElement.value}/matches`)
-        .then(response => response.json())
-        .then(data => {
-          const last50Matches = data.slice(0, 51);
-          const matchesData = last50Matches;
-          const matchesRef = doc(db, 'matches', inputElement.value);
-          setDoc(matchesRef, { matchesData }, { merge: true });
-          setMatchesData(matchesData.slice(0, parseInt(number)));
-          toast.success('Caricamento completato')
-        })
-        .catch(error => console.error('Errore:', error));
+      .then(response => response.json())
+      .then(data => {
+        if (!data || data.length === 0 || data.error) { // controlla se la risposta è vuota, ha lunghezza zero o contiene un errore
+          toast.error("Non valido");
+          return;
+        }
+        const last50Matches = data.slice(0, 51);
+        const matchesData = last50Matches;
+        const matchesRef = doc(db, 'matches', inputElement.value);
+        setDoc(matchesRef, { matchesData }, { merge: true });
+        setMatchesData(matchesData.slice(0, parseInt(number)));
+        toast.success('Caricamento completato');
+      })
+      .catch(error => {
+        console.error('Errore:', error);
+        toast.error("Non valido");
+      });
 
     }
   };

@@ -24,7 +24,7 @@ export default function Navbar() {
       await signOut(getAuth());
       toast.success('Sloggato con successo.');
     } catch (error) {
-      console.error('Errore durante il logout:', error);
+      toast.success('Errore durante il logout.');
     }
   }
 
