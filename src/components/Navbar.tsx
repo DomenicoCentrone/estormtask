@@ -36,7 +36,7 @@ export default function Navbar() {
           <Button color="inherit" href="/">Homepage</Button>
           {user ? (
             <>
-              <Typography sx={{ marginLeft: 2 }}>{user.email ? user.email.split('@')[0] : ''}</Typography>
+              <Typography sx={{ marginLeft: 2 }}>{user.email ? user.displayName : ''}</Typography>
               <Button color="inherit" onClick={handleSignOut}>Esci</Button>
             </>
           ) : (

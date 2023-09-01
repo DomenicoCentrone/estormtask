@@ -20,7 +20,17 @@ export default function BasicGrid() {
     <Grid container spacing={2} alignItems="center" justifyContent="center" textAlign="center" style={{ paddingTop: '1%' }}>
       <Grid xs={3}>
         {user ? (
-          <Searchform />
+          <>
+          <Grid>
+            <Typography>Ciao {user.displayName}</Typography>
+          </Grid>
+          <Grid>
+            <Typography>La tua mail: {user.email}</Typography>
+          </Grid>
+          <Grid>
+            <Searchform />
+          </Grid>
+          </>
         ) : (
           <Typography>Per favore, registrati</Typography>
         )}
